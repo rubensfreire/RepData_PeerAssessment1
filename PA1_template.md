@@ -1,17 +1,19 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
         # Needed packages
         library("knitr")
         library("ggplot2")
+```
 
+```
+## Warning: package 'ggplot2' was built under R version 3.3.2
+```
+
+```r
         # Open File, if needed download and unzip it
         file <- "activity.csv"
         if (!file.exists(file)) {
@@ -29,7 +31,8 @@ output:
 ```
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
         # Calculate the total number of steps taken per day
         steps_sum<-aggregate(steps~date,data=data_activity,FUN="sum")
         
@@ -37,32 +40,59 @@ output:
         barplot(steps_sum$steps, names.arg = steps_sum$date, xlab = "date", ylab = "steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
         # Calculate and report the mean and median of the total number of steps taken per day
-```{r}
+
+```r
         mean(steps_sum$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
         median(steps_sum$steps)
 ```
 
+```
+## [1] 10765
+```
+
 ## What is the average daily activity pattern?
-```{r}
+
+```r
         steps_interval<-aggregate(steps~interval,data=data_activity,FUN="mean")
         plot(steps ~ interval, data=steps_interval,  type="l")
-        
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 ## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
         steps_interval$interval[which.max(steps_interval$steps)]
+```
+
+```
+## [1] 835
 ```
 ## Imputing missing values
 
 ####Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with 𝙽𝙰s)
-```{r}
+
+```r
         sum(complete.cases(data_activity))
+```
+
+```
+## [1] 15264
 ```
 
 ####Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-```{r}
+
+```r
        new_data_activity<-data_activity
        for(i in 1:nrow(new_data_activity))
        {
@@ -78,21 +108,38 @@ output:
                 }  
        }
       #  steps_interval<-aggregate(steps~interval,data=new_data_activity,FUN="mean")
-        
 ```
 #### Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
           # Calculate the total number of steps taken per day
         steps_sum<-aggregate(steps~date,data=new_data_activity,FUN="sum")
 ```
 
 #### Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? 
 
-```{r}
+
+```r
         barplot(steps_sum$steps, names.arg = steps_sum$date, xlab = "date", ylab = "steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+```r
         mean(steps_sum$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
         median(steps_sum$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 ####What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -100,7 +147,8 @@ output:
 
 ## Are there differences in activity patterns between weekdays and weekends?
 #### Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
-```{r}
+
+```r
         data_activity$daytype <- as.factor(ifelse(weekdays(as.Date(data_activity$date)) %in% c("Saturday","Sunday"),"weekend", "weekday"))
       #  weekday_activity<-subset(data_activity,data_activity$daytype=="weekday")
       #  weekend_activity<-subset(data_activity,data_activity$daytype=="weekend")
@@ -108,6 +156,7 @@ output:
         week_steps_interval<-aggregate(steps~interval+daytype,data=data_activity,FUN="mean")
         g <- ggplot(week_steps_interval, aes(week_steps_interval$interval, week_steps_interval$steps))
         g+geom_line()+facet_grid(week_steps_interval$daytype ~ .) +labs(title = "Weekdays & Weekends Average Steps per 5 min Interval") + labs(x = "5 min. Interval" , y= " Number of Steps")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
